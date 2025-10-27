@@ -14,16 +14,18 @@ app.get('/', (req, res) => {
   });
 });
 
-// eBay Account Deletion Notification Endpoint
 app.post('/webhook/ebay/account-deletion', (req, res) => {
   const notification = req.body;
   
-  // Log the notification
   console.log('=== eBay Notification Received ===');
   console.log('Timestamp:', new Date().toISOString());
-  console.log('Headers:', req.headers);
   console.log('Body:', JSON.stringify(notification, null, 2));
   console.log('===================================');
+  
+  // Try multiple response formats
+  res.set('Content-Type', 'application/json');
+  res.status(200).json({ challengeResponse: req.body.challengeCode || '' });
+});
   
   // Respond with 200 OK immediately (required by eBay)
   res.status(200).json({
