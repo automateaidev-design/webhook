@@ -1,0 +1,19 @@
+{
+  "name": "ebay-webhook-handler",
+  "version": "1.0.0",
+  "description": "Simple webhook handler for eBay account deletion notifications",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "keywords": ["ebay", "webhook", "gdpr"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
