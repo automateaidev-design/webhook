@@ -1,0 +1,15 @@
+{
+  "name": "ebay-webhook-handler",
+  "version": "1.0.0",
+  "description": "eBay account deletion webhook handler",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
