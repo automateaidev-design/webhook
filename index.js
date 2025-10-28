@@ -2,11 +2,9 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Parse JSON bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Root endpoint - health check
 app.get('/', (req, res) => {
   res.status(200).json({
     status: 'active',
@@ -15,7 +13,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// eBay Account Deletion Notification Endpoint
 app.all('/webhook/ebay/account-deletion', (req, res) => {
   console.log('=== eBay Request Received ===');
   console.log('Method:', req.method);
@@ -24,19 +21,19 @@ app.all('/webhook/ebay/account-deletion', (req, res) => {
   console.log('Body:', JSON.stringify(req.body, null, 2));
   console.log('Timestamp:', new Date().toISOString());
   
-  // Handle GET request with challenge_code (eBay verification)
   if (req.method === 'GET') {
     const challengeCode = req.query.challenge_code || req.query.challengeCode;
     
     if (challengeCode) {
       console.log('✅ Challenge code received:', challengeCode);
-      const response = { challengeResponse: challengeCode };
-      console.log('Responding with:', JSON.stringify(response));
+      
+      // Try plain text response (what eBay might actually want)
+      console.log('Responding with PLAIN TEXT:', challengeCode);
       console.log('===================================');
-      return res.status(200).json(response);
+      res.set('Content-Type', 'text/plain');
+      return res.status(200).send(challengeCode);
     }
     
-    // Simple GET without challenge
     console.log('Simple GET - responding 200 OK');
     console.log('===================================');
     return res.status(200).json({
@@ -45,19 +42,16 @@ app.all('/webhook/ebay/account-deletion', (req, res) => {
     });
   }
   
-  // Handle POST request (actual notifications)
   if (req.method === 'POST') {
     console.log('📬 POST notification received');
     
-    // Handle challenge in POST body
     if (req.body && req.body.challengeCode) {
       console.log('✅ Challenge code in body:', req.body.challengeCode);
-      const response = { challengeResponse: req.body.challengeCode };
+      res.set('Content-Type', 'text/plain');
       console.log('===================================');
-      return res.status(200).json(response);
+      return res.status(200).send(req.body.challengeCode);
     }
     
-    // Handle actual notification
     const notification = req.body;
     console.log('Processing notification');
     console.log('===================================');
@@ -68,12 +62,10 @@ app.all('/webhook/ebay/account-deletion', (req, res) => {
     });
   }
   
-  // Other methods
   console.log('===================================');
   res.status(405).json({ error: 'Method not allowed' });
 });
 
-// Test endpoint
 app.get('/test', (req, res) => {
   res.status(200).json({
     status: 'working',
@@ -82,7 +74,6 @@ app.get('/test', (req, res) => {
   });
 });
 
-// Start server
 app.listen(port, () => {
   console.log(`✅ eBay Webhook Handler running on port ${port}`);
   console.log(`📍 Webhook: /webhook/ebay/account-deletion`);
